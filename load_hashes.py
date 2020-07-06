@@ -13,7 +13,7 @@ with open('hash.csv') as csv_file:
             line_count += 1
         else:
             #print(f'\t{col}')
-            table = dynamodb.Table('Teams')
+            table = dynamodb.Table('Teams-dev')
             table.put_item(Item={'table_number': int(col[3]), 'team_hash':col[4], 'team_hash_login':col[5], 'members_count': 0, 'members': [] })
             line_count += 1
     print(f'Processed {line_count} lines.')
