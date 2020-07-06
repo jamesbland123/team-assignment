@@ -1,0 +1,73 @@
+# serverless.yml
+
+service: serverless-flask
+
+plugins:
+  - serverless-python-requirements
+  - serverless-wsgi
+
+custom:
+  tableName: 'Teams-${self:provider.stage}'
+  wsgi:
+    app: app.app
+    packRequirements: false
+  pythonRequirements:
+    dockerizePip: non-linux
+
+provider:
+  name: aws
+  runtime: python3.6
+  stage: dev
+  region: us-west-2
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource:
+        - { "Fn::GetAtt": ["TeamDynamoDBTable", "Arn" ] }
+  environment:
+    DB_TABLE: ${self:custom.tableName}
+
+functions:
+  app:
+    handler: wsgi.handler
+    events:
+      - http: ANY /
+      - http: 'ANY {proxy+}'
+  getTeams:
+    handler: wsgi.handler
+    events:
+      - http: 'GET /teams'
+  addMember:
+    handler: wsgi.handler
+    events:
+      - http: 'POST /member/{proxy+}'
+
+resources:
+  Resources:
+    TeamDynamoDBTable:
+      Type: 'AWS::DynamoDB::Table'
+      Properties:
+        AttributeDefinitions:
+          -
+            AttributeName: table_number
+            AttributeType: N
+          - 
+            AttributeName: team_hash
+            AttributeType: S
+        KeySchema:
+          -
+            AttributeName: table_number
+            KeyType: HASH
+          - 
+            AttributeName: team_hash
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 3
+          WriteCapacityUnits: 3
+        TableName: ${self:custom.tableName}
