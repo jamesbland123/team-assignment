@@ -8,6 +8,7 @@ plugins:
 
 custom:
   tableName: 'Teams-${self:provider.stage}'
+  region: ${opt:region, self:provider.region}
   wsgi:
     app: app.app
     packRequirements: false
@@ -16,7 +17,7 @@ custom:
 
 provider:
   name: aws
-  runtime: python3.6
+  runtime: python3.7
   stage: dev
   region: us-west-2
   iamRoleStatements:
@@ -32,6 +33,7 @@ provider:
         - { "Fn::GetAtt": ["TeamDynamoDBTable", "Arn" ] }
   environment:
     DB_TABLE: ${self:custom.tableName}
+    ENDPOINT: { "Fn::Join" : ["", [" https://", { "Ref" : "ApiGatewayRestApi" }, ".execute-api.${self:custom.region}.amazonaws.com/${self:provider.stage}/member" ] ]  }
 
 functions:
   app:
@@ -46,7 +48,7 @@ functions:
   addMember:
     handler: wsgi.handler
     events:
-      - http: 'POST /member/{proxy+}'
+      - http: 'POST /member'
 
 resources:
   Resources:
