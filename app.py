@@ -13,7 +13,7 @@ team_size = 1
 @app.route("/")
 def main_page():
     page = '''
-        <h2>Team Assignment Request</h2>
+        <h2>AWS Workshop Code Request</h2>
         <form action="{}" method="post">
         <label for="name">Name:</label>
         <input type="text" id="name" name="name"><br><br>

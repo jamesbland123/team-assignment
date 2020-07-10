@@ -73,3 +73,11 @@ resources:
           ReadCapacityUnits: 3
           WriteCapacityUnits: 3
         TableName: ${self:custom.tableName}
+
+package:
+  exclude:
+    - node_modules/**
+    - assign_team.py
+    - create_table.py
+    - hash.csv
+    - load_hashes.py
