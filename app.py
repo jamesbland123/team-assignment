@@ -1,7 +1,7 @@
 # app.py
 import os
 import boto3
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 app = Flask(__name__)
 
 TABLE = os.environ['DB_TABLE']
@@ -12,14 +12,7 @@ team_size = 1
 
 @app.route("/")
 def main_page():
-    page = '''
-        <h2>AWS Workshop Code Request</h2>
-        <form action="{}" method="post">
-        <label for="name">Name:</label>
-        <input type="text" id="name" name="name"><br><br>
-        <input type="submit" value="Submit">
-        </form>'''.format(ENDPOINT)
-    return (page)    
+    return render_template('register.html', endpoint=ENDPOINT)    
 
 @app.route("/teams")
 def get_teams():
@@ -65,13 +58,9 @@ def add_member():
             team['members'].append(name)
             db_tbl.put_item(Item=team)
             
-            return "Your team hash login is : <a href={0}>{0}</a> <br> <br> Please do not click the back button".format(team['team_hash_login'])
+            return render_template('hash.html', hash_code=team['team_hash_login'])
     
-    full_message = '''
-                   Sorry {}, but all teams are full. You are welcome to watch the event or follow
-                   along in your own account. <br>Please let the event staff know that you were not 
-                   assigned to a team.'''.format(name)
-    return (full_message)          
+    return render_template('no_hashes.html', name=name)         
 
 if __name__ == "__main__":
     main_page()
