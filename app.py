@@ -1,7 +1,7 @@
 # app.py
 import os
 import boto3
-from flask import Flask, jsonify, request, render_template
+from flask import Flask, jsonify, request, render_template, make_response
 app = Flask(__name__)
 
 TABLE = os.environ['DB_TABLE']
@@ -12,7 +12,11 @@ team_size = 1
 
 @app.route("/")
 def main_page():
-    return render_template('register.html', endpoint=ENDPOINT)    
+    if 'hash_provided' in request.cookies:
+        return render_template('hash_provided.html')
+
+    else:
+        return render_template('register.html', endpoint=ENDPOINT)    
 
 @app.route("/teams")
 def get_teams():
@@ -29,9 +33,12 @@ def get_teams():
 
 @app.route("/member", methods=['POST'])
 def add_member():
+    if 'hash_provided' in request.cookies:
+        return render_template('hash_provided.html')
+
     name = request.form.get('name')
     if not name:
-        return 'Please provide userId and name'
+        return render_template('msg.html', message='Please provide userId and name')
     
     response = db_tbl.scan()
     data = response['Items']
@@ -58,7 +65,9 @@ def add_member():
             team['members'].append(name)
             db_tbl.put_item(Item=team)
             
-            return render_template('hash.html', hash_code=team['team_hash_login'])
+            resp = make_response(render_template('hash.html', hash_code=team['team_hash_login']))
+            resp.set_cookie('hash_provided', value='YES', max_age=1800 )
+            return resp
     
     return render_template('no_hashes.html', name=name)         
 
