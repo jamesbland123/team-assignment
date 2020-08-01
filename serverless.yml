@@ -29,6 +29,7 @@ provider:
         - dynamodb:PutItem
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
+        - dynamodb:BatchWriteItem
       Resource:
         - { "Fn::GetAtt": ["TeamDynamoDBTable", "Arn" ] }
   environment:
@@ -49,6 +50,10 @@ functions:
     handler: wsgi.handler
     events:
       - http: 'POST /member'
+  deleteAll:
+    handler: wsgi.handler
+    events:
+      - http: 'GET /delete_all'
 
 resources:
   Resources:

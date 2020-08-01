@@ -69,7 +69,27 @@ def add_member():
             resp.set_cookie('hash_provided', value='YES', max_age=1800 )
             return resp
     
-    return render_template('no_hashes.html', name=name)         
+    return render_template('no_hashes.html', name=name)    
+
+@app.route("/delete_all")
+def delete_all():
+    response = db_tbl.scan()
+    data = response['Items']
+
+# Retrieve data records beyond 1MB dynamodb response
+    while 'LastEvaluatedKey' in response:
+        response = db_tbl.scan(ExclusiveStartKey=response['LastEvaluatedKey'])
+        data.extend(response['Items'])
+
+    with db_tbl.batch_writer() as batch:
+        for each in data:
+            batch.delete_item(Key={
+                                   'table_number': each['table_number'],
+                                   'team_hash': each['team_hash']
+                                  }
+                              )
+    
+    return render_template('msg.html', message='Data has been deleted')     
 
 if __name__ == "__main__":
     main_page()
