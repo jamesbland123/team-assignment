@@ -89,7 +89,7 @@ def delete_all():
                                   }
                               )
     
-    return render_template('msg.html', message='Data has been deleted')     
+    return jsonify({'success': 'data deleted'})     
 
 if __name__ == "__main__":
     main_page()

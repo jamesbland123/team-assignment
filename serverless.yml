@@ -35,6 +35,8 @@ provider:
   environment:
     DB_TABLE: ${self:custom.tableName}
     ENDPOINT: { "Fn::Join" : ["", [" https://", { "Ref" : "ApiGatewayRestApi" }, ".execute-api.${self:custom.region}.amazonaws.com/${self:provider.stage}/member" ] ]  }
+  apiKeys:
+    - admin-key
 
 functions:
   app:
@@ -53,7 +55,10 @@ functions:
   deleteAll:
     handler: wsgi.handler
     events:
-      - http: 'GET /delete_all'
+      - http: 
+          path: delete_all
+          method: get
+          private: true
 
 resources:
   Resources:
