@@ -28,7 +28,15 @@ def get_teams():
         response = db_tbl.scan(ExclusiveStartKey=response['LastEvaluatedKey'])
         data.extend(response['Items'])
 
-    return str(data)
+    # Initialize sorted_teams
+    sorted_teams = [ x for x in range(len(data)) ]
+
+    for i in data:
+        table_number = i['table_number']
+        idx_num = int(table_number) - 1
+        sorted_teams[idx_num] = i
+
+    return render_template('teams_table.html', items=sorted_teams)
 
 
 @app.route("/member", methods=['POST'])
