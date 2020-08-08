@@ -2,6 +2,7 @@
 import os
 import boto3
 from flask import Flask, jsonify, request, render_template, make_response
+
 app = Flask(__name__)
 
 TABLE = os.environ['DB_TABLE']
@@ -20,22 +21,10 @@ def main_page():
 
 @app.route("/teams")
 def get_teams():
-    response = db_tbl.scan()
-    data = response['Items']
-
-# Retrieve data records beyond 1MB dynamodb response
-    while 'LastEvaluatedKey' in response:
-        response = db_tbl.scan(ExclusiveStartKey=response['LastEvaluatedKey'])
-        data.extend(response['Items'])
-
-    # Initialize sorted_teams
-    sorted_teams = [ x for x in range(len(data)) ]
-
-    for i in data:
-        table_number = i['table_number']
-        idx_num = int(table_number) - 1
-        sorted_teams[idx_num] = i
-
+    
+    teams = get_db_items()
+    sorted_teams = sort_teams(teams)
+    
     return render_template('teams_table.html', items=sorted_teams)
 
 
@@ -48,24 +37,8 @@ def add_member():
     if not name:
         return render_template('msg.html', message='Please provide userId and name')
     
-    response = db_tbl.scan()
-    data = response['Items']
-  
-    # Retrieve data records beyond 1MB dynamodb response
-    while 'LastEvaluatedKey' in response:
-        response = db_tbl.scan(ExclusiveStartKey=response['LastEvaluatedKey'])
-        data.extend(response['Items'])
-
-    # reordering the response from dynamo to place table_number in numerical order
-    # python sort doesn't work for this use case.
-    
-    # Initialize sorted_teams
-    sorted_teams = [ x for x in range(len(data)) ]
-
-    for i in data:
-        table_number = i['table_number']
-        idx_num = int(table_number) - 1
-        sorted_teams[idx_num] = i
+    teams = get_db_items()
+    sorted_teams = sort_teams(teams)
 
     for team in sorted_teams:
         if int(team['members_count']) < team_size: 
@@ -98,6 +71,21 @@ def delete_all():
                               )
     
     return jsonify({'success': 'data deleted'})     
+
+def sort_teams(team_list):
+    sorted_teams = sorted(team_list, key=lambda item: item['table_number'])
+    return sorted_teams
+
+def get_db_items():
+    response = db_tbl.scan()
+    data = response['Items']
+
+    # Retrieve data records beyond 1MB dynamodb response
+    while 'LastEvaluatedKey' in response:
+        response = db_tbl.scan(ExclusiveStartKey=response['LastEvaluatedKey'])
+        data.extend(response['Items'])
+
+    return data
 
 if __name__ == "__main__":
     main_page()
