@@ -40,20 +40,20 @@ provider:
 
 functions:
   app:
-    handler: wsgi.handler
+    handler: wsgi_handler.handler
     events:
       - http: ANY /
       - http: 'ANY {proxy+}'
   getTeams:
-    handler: wsgi.handler
+    handler: wsgi_handler.handler
     events:
       - http: 'GET /teams'
   addMember:
-    handler: wsgi.handler
+    handler: wsgi_handler.handler
     events:
       - http: 'POST /member'
   deleteAll:
-    handler: wsgi.handler
+    handler: wsgi_handler.handler
     events:
       - http: 
           path: delete_all
