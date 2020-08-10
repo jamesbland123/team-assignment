@@ -48,12 +48,6 @@ functions:
     handler: wsgi_handler.handler
     events:
       - http: 'POST /member'
-  deleteAll:
-    handler: wsgi_handler.handler
-    events:
-      - http: 
-          path: delete_all
-          method: get
   login:
     handler: wsgi_handler.handler
     events:
@@ -65,6 +59,24 @@ functions:
     events:
       - http: 
           path: logout
+          method: get
+  admin:
+    handler: wsgi_handler.handler
+    events:
+      - http: 
+          path: admin
+          method: get
+  list_teams:
+    handler: wsgi_handler.handler
+    events:
+      - http: 
+          path: list_teams
+          method: get
+  deleteAll:
+    handler: wsgi_handler.handler
+    events:
+      - http: 
+          path: delete_all
           method: get
 
 resources:

@@ -76,10 +76,17 @@ def logout():
 @app.route("/admin")
 def admin():
     if 'username' in request.cookies:
+        return render_template('admin.html')
+    
+    return redirect(url_for('login'))
+
+@app.route("/list_teams")
+def list_teams():
+    if 'username' in request.cookies:
         teams = get_db_items()
         sorted_teams = sort_teams(teams)
         
-        return render_template('admin.html', items=sorted_teams)
+        return render_template('list_teams.html', items=sorted_teams)
     
     return redirect(url_for('login'))
 
