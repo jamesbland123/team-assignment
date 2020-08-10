@@ -1,9 +1,13 @@
 # app.py
 import os
 import boto3
-from flask import Flask, jsonify, request, render_template, make_response
+from flask import Flask, jsonify, request, render_template, make_response, url_for, redirect
 
 app = Flask(__name__)
+
+users = {
+    "admin" : "abc123sisboombah"
+}
 
 TABLE = os.environ['DB_TABLE']
 ENDPOINT = os.environ['ENDPOINT']
@@ -18,15 +22,6 @@ def main_page():
 
     else:
         return render_template('register.html', endpoint=ENDPOINT)    
-
-@app.route("/teams")
-def get_teams():
-    
-    teams = get_db_items()
-    sorted_teams = sort_teams(teams)
-    
-    return render_template('teams_table.html', items=sorted_teams)
-
 
 @app.route("/member", methods=['POST'])
 def add_member():
@@ -52,25 +47,62 @@ def add_member():
     
     return render_template('no_hashes.html', name=name)    
 
+@app.route("/login", methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+
+        if check_password(username, password):
+            resp = make_response(redirect(url_for('admin')))
+            resp.set_cookie('username', value=username, max_age=3600)
+            return resp
+
+        else: 
+            return render_template('msg.html', message='Login failed')
+
+    if 'username' in request.cookies:
+        return redirect(url_for('admin'))   
+
+    return render_template('login.html', endpoint=ENDPOINT)
+
+@app.route("/logout")
+def logout():
+    message = "User has been logged out." 
+    resp = make_response(render_template('logout.html', message=message))
+    resp.set_cookie('username', '', expires=0)
+    return resp
+
+@app.route("/admin")
+def admin():
+    if 'username' in request.cookies:
+        teams = get_db_items()
+        sorted_teams = sort_teams(teams)
+        
+        return render_template('admin.html', items=sorted_teams)
+    
+    return redirect(url_for('login'))
+
 @app.route("/delete_all")
 def delete_all():
-    response = db_tbl.scan()
-    data = response['Items']
+    if 'username' in request.cookies:
+        
+        data = get_db_items()
 
-# Retrieve data records beyond 1MB dynamodb response
-    while 'LastEvaluatedKey' in response:
-        response = db_tbl.scan(ExclusiveStartKey=response['LastEvaluatedKey'])
-        data.extend(response['Items'])
-
-    with db_tbl.batch_writer() as batch:
-        for each in data:
-            batch.delete_item(Key={
-                                   'table_number': each['table_number'],
-                                   'team_hash': each['team_hash']
-                                  }
-                              )
+        with db_tbl.batch_writer() as batch:
+            for each in data:
+                batch.delete_item(Key={
+                                    'table_number': each['table_number'],
+                                    'team_hash': each['team_hash']
+                                    }
+                                )
+        
+        return jsonify({'success': 'data deleted'})     
+        
+        
+    return redirect(url_for('login'))
     
-    return jsonify({'success': 'data deleted'})     
+    
 
 def sort_teams(team_list):
     sorted_teams = sorted(team_list, key=lambda item: item['table_number'])
@@ -86,6 +118,11 @@ def get_db_items():
         data.extend(response['Items'])
 
     return data
+
+def check_password(username, password):
+    if username in users and users.get(username) == password:
+        return True
+    return False
 
 if __name__ == "__main__":
     main_page()

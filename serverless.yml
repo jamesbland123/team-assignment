@@ -34,7 +34,7 @@ provider:
         - { "Fn::GetAtt": ["TeamDynamoDBTable", "Arn" ] }
   environment:
     DB_TABLE: ${self:custom.tableName}
-    ENDPOINT: { "Fn::Join" : ["", [" https://", { "Ref" : "ApiGatewayRestApi" }, ".execute-api.${self:custom.region}.amazonaws.com/${self:provider.stage}/member" ] ]  }
+    ENDPOINT: { "Fn::Join" : ["", [" https://", { "Ref" : "ApiGatewayRestApi" }, ".execute-api.${self:custom.region}.amazonaws.com/${self:provider.stage}" ] ]  }
   apiKeys:
     - admin-key
 
@@ -44,10 +44,6 @@ functions:
     events:
       - http: ANY /
       - http: 'ANY {proxy+}'
-  getTeams:
-    handler: wsgi_handler.handler
-    events:
-      - http: 'GET /teams'
   addMember:
     handler: wsgi_handler.handler
     events:
@@ -58,7 +54,18 @@ functions:
       - http: 
           path: delete_all
           method: get
-          private: true
+  login:
+    handler: wsgi_handler.handler
+    events:
+      - http: 
+          path: login
+          method: any
+  logout:
+    handler: wsgi_handler.handler
+    events:
+      - http: 
+          path: logout
+          method: get
 
 resources:
   Resources:
