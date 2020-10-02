@@ -1,15 +1,37 @@
 # team-assignment
 
 ## Setup
-Install serverless framework
+
+**You will need Python 3.7**
+
+Python 3.7.9 on Cloud9
+```
+wget https://www.python.org/ftp/python/3.7.9/Python-3.7.9.tgz
+tar xvzf Python-3.7.9.tgz
+cd Python-3.7.9
+./configure
+make
+sudo make install
+```
+
+Python 3.7 on Mac
+```
+brew install python@3.7
+```
+
+## Install Serverless framework
+```
+$ npm install -g serverless
+```
 
 You will need two additional plugins
 ```
-$ npm install serverless-wsgi serverless-python-requirements
+$ npm install -g serverless-wsgi serverless-python-requirements
 ```
 
 ## Activate python venv and requirements.txt
 ```
+$ cd team-assignment
 $ python3 -m venv venv
 $ source venv/bin/activate
 $ pip3 install -r requirements.txt
