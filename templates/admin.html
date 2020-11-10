@@ -138,6 +138,11 @@
                             <p><b>Warning:</b> Delete table items does not confirm </p>
                         </form>
 
+                        <form action="{{ url_for('upload') }}" method = "POST" enctype = "multipart/form-data">
+                            <input type = "file" name = "file" /><button type = "submit" class="btn">Upload</button>
+                             <p><b>Warning:</b> Data won't be appended.</p>
+                         </form>
+
                         <form action="{{ url_for('logout') }}">
                             <button type="submit" class="btn">Logout</button>
                         </form>
