@@ -109,7 +109,29 @@ def delete_all():
         
     return redirect(url_for('login'))
     
-    
+@app.route("/upload", methods=['POST'])
+def upload():
+      if request.method == 'POST':
+        f = request.files['file']
+        print(f.filename)
+        delete_all()
+        
+        #store the file contents as a string
+        fstring = f.read().decode("utf-8")
+        print(fstring)
+        myreader = csv.reader(fstring.splitlines())
+        line_count = 0
+        for row in myreader:
+            if line_count == 0:
+                print(f'Column names are {row}')
+                line_count += 1
+            else:
+                db_tbl.put_item(Item={'table_number': int(row[3]), 'team_hash':row[4], 'team_hash_login':row[5], 'members_count': 0, 'members': [] })
+                print( row[3], row[4], row[5])
+                line_count += 1
+                
+        print(line_count)
+        return redirect(url_for('login'))    
 
 def sort_teams(team_list):
     sorted_teams = sorted(team_list, key=lambda item: item['table_number'])
