@@ -99,7 +99,7 @@ def delete_all():
         with db_tbl.batch_writer() as batch:
             for each in data:
                 batch.delete_item(Key={
-                                    'table_number': each['table_number'],
+                                    'row_number': each['row_number'],
                                     'team_hash': each['team_hash']
                                     }
                                 )
@@ -126,7 +126,7 @@ def upload():
                 print(f'Column names are {row}')
                 line_count += 1
             else:
-                db_tbl.put_item(Item={'table_number': int(row[3]), 'team_hash':row[4], 'team_hash_login':row[5], 'members_count': 0, 'members': [] })
+                db_tbl.put_item(Item={'row_number': int(row[3]), 'team_hash':row[4], 'team_hash_login':row[5], 'members_count': 0, 'members': [] })
                 print( row[3], row[4], row[5])
                 line_count += 1
                 
@@ -134,7 +134,7 @@ def upload():
         return redirect(url_for('login'))    
 
 def sort_teams(team_list):
-    sorted_teams = sorted(team_list, key=lambda item: item['table_number'])
+    sorted_teams = sorted(team_list, key=lambda item: item['row_number'])
     return sorted_teams
 
 def get_db_items():

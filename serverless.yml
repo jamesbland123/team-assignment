@@ -86,14 +86,14 @@ resources:
       Properties:
         AttributeDefinitions:
           -
-            AttributeName: table_number
+            AttributeName: row_number
             AttributeType: N
           - 
             AttributeName: team_hash
             AttributeType: S
         KeySchema:
           -
-            AttributeName: table_number
+            AttributeName: row_number
             KeyType: HASH
           - 
             AttributeName: team_hash
