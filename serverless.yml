@@ -78,6 +78,12 @@ functions:
       - http: 
           path: delete_all
           method: get
+  updateRow:
+    handler: wsgi_handler.handler
+    events:
+      - http: 
+          path: update_row
+          method: post
 
 resources:
   Resources:

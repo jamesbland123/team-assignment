@@ -133,6 +133,32 @@ def upload():
         print(line_count)
         return redirect(url_for('login'))    
 
+@app.route("/update_row", methods=['POST'])
+def update_row():
+    req_data = request.get_json()
+    row_number = int(req_data['row_number'])
+    
+    response = db_tbl.update_item(
+        Key={
+            'row_number': row_number,
+            'team_hash': req_data['team_hash']
+        },
+        UpdateExpression="set team_hash_login=:t, members=:m, members_count=:c",
+        ExpressionAttributeValues={
+            ':t': req_data['team_hash_login'],
+            ':m': req_data['members'],
+            ':c': req_data['members_count']
+        },
+        ReturnValues="NONE"
+    )
+    return jsonify({
+        "status": "success",
+        "row_number": row_number,
+        "team_hash_login": req_data['team_hash_login'],
+        "members": req_data['members'],
+        "members_count": int(req_data['members_count'])
+        })           
+
 def sort_teams(team_list):
     sorted_teams = sorted(team_list, key=lambda item: item['row_number'])
     return sorted_teams
