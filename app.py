@@ -1,6 +1,7 @@
 # app.py
 import os
 import boto3
+import simplejson as json
 from flask import Flask, jsonify, request, render_template, make_response, url_for, redirect
 
 app = Flask(__name__)
@@ -82,12 +83,22 @@ def admin():
 
 @app.route("/list_teams")
 def list_teams():
+    if (request.headers.get('setJson') == "true"):
+        teams = get_db_items()
+        sorted_teams = sort_teams(teams)
+
+        response = make_response(json.dumps(sorted_teams))
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
     if 'username' in request.cookies:
         teams = get_db_items()
         sorted_teams = sort_teams(teams)
         
         return render_template('list_teams.html', items=sorted_teams)
     
+
+
     return redirect(url_for('login'))
 
 @app.route("/delete_all")
