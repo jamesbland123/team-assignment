@@ -3,8 +3,11 @@ import os
 import boto3
 import simplejson as json
 from flask import Flask, jsonify, request, render_template, make_response, url_for, redirect
+from flask_cors import CORS
 
 app = Flask(__name__)
+# enable CORS
+CORS(app, resources={r'/*': {'origins': '*'}})
 
 users = {
     "admin" : "abc123sisboombah"
