@@ -84,6 +84,13 @@ def admin():
     
     return redirect(url_for('login'))
 
+@app.route("/list_edit_teams")
+def list_edit_teams():
+    if 'username' in request.cookies:
+        return render_template('list_edit_teams.html', endpoint=ENDPOINT)
+    
+    return redirect(url_for('login'))
+
 @app.route("/list_teams")
 def list_teams():
     if (request.headers.get('setJson') == "true"):

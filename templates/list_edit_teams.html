@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>List & Edit Teams</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  
+  
+    
+</head>
+
+<body>
+  <div id="app" class="container">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Team Hash</th>
+          <th>Hash Link</th>
+          <th>Members</th>
+          <th>Count</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="(data, key) in data" v-bind:key="key">
+          <td>  {% raw %}{{ data.row_number }}{% endraw %} </td>
+          <td>  {% raw %}{{ data.team_hash }}{% endraw %}  </td>
+          <td>  {% raw %}{{ data.team_hash_login }}{% endraw %}  </td>
+          <td> <input v-model="data.members" v-on:keyup="data.disable_save = false" placeholder=" "> </td>
+          <td> <input v-model="data.members_count" v-on:keyup="data.disable_save = false" placeholder="0"> </td>
+          <td> <button v-on:click="update_row(data); data.disable_save = true" v-bind:disabled="data.disable_save">save</button> </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    new Vue( {
+      el: "#app",
+      data: {
+          data: {}
+      },
+    
+      beforeMount() {
+        this.get_teams();
+      },
+    
+      methods: {
+        async get_teams(){
+          const res = await fetch('{{endpoint}}/list_teams', {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'setJson': 'true',
+            }
+           });
+          let data = await res.json();
+          
+          for (let row in data) {
+            data[row]["disable_save"] = true;
+          }
+    
+          this.data = data;
+        },
+        
+        async update_row(data_obj){
+          const res = await fetch('{{endpoint}}/update_row', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data_obj)
+          })
+          console.log(res.statusText)
+        }
+      }
+    });
+  </script>
+
+</body>
+
+</html>

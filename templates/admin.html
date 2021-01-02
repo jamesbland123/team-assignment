@@ -133,6 +133,10 @@
                             <button type="submit" class="btn">List Teams</button>
                         </form>
 
+                        <form action="{{ url_for('list_edit_teams') }}">
+                            <button type="submit" class="btn">List & Edit Teams</button>
+                        </form>
+
                         <form action="{{ url_for('delete_all') }}">
                             <button type="submit" class="btn">Delete All Table Items</button>
                             <p><b>Warning:</b> Delete table items does not confirm </p>

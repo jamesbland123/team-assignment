@@ -72,6 +72,12 @@ functions:
       - http: 
           path: list_teams
           method: get
+  list_edit_teams:
+    handler: wsgi_handler.handler
+    events:
+      - http: 
+          path: list_edit_teams
+          method: get
   deleteAll:
     handler: wsgi_handler.handler
     events:
