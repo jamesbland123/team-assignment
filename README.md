@@ -1,22 +1,25 @@
 # team-assignment
 
+## Prereq's
+Docker is required by serverless framework
+
 ## Setup
 
-**You will need Python 3.7**
+**You will need Python 3.8, tested on 3.8.9 **
 
-Python 3.7.9 on Cloud9
+Python 3.8.9 on Cloud9
 ```
-wget https://www.python.org/ftp/python/3.7.9/Python-3.7.9.tgz
-tar xvzf Python-3.7.9.tgz
-cd Python-3.7.9
+wget https://www.python.org/ftp/python/3.8.9/Python-3.8.9.tgz
+tar xvzf Python-3.8.9.tgz
+cd Python-3.8.9
 ./configure
 make
 sudo make install
 ```
 
-Python 3.7 on Mac
+Python 3.8 on Mac
 ```
-brew install python@3.7
+brew install python@3.8
 ```
 
 ## Install Serverless framework

@@ -35,8 +35,6 @@ provider:
   environment:
     DB_TABLE: ${self:custom.tableName}
     ENDPOINT: { "Fn::Join" : ["", [" https://", { "Ref" : "ApiGatewayRestApi" }, ".execute-api.${self:custom.region}.amazonaws.com/${self:provider.stage}" ] ]  }
-  apiKeys:
-    - admin-key
 
 functions:
   app:
