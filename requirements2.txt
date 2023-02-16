@@ -14,5 +14,5 @@ s3transfer==0.6.0
 simplejson==3.17.6
 six==1.16.0
 urllib3==1.26.12
-Werkzeug==2.2.2
+Werkzeug==2.2.3
 zipp==3.9.0
